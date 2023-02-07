@@ -1,23 +1,24 @@
-import argparse
 import json
+import argparse
 
 def open_manifest(file_location):
     with open(file_location, 'r') as f:
         data = json.load(f)
     return data
 
+def set_teamcity_params(values):
+    for key, value in values.items():
+        if key == "sa_version":
+            print("##teamcity[setParameter name='sa_version' value='{}']".format(values["version"]))
+        else:
+            print("##teamcity[setParameter name='{}' value='{}']".format(key, value))
+
 def get_manifest_values(file_location, keys):
     manifest = open_manifest(file_location)
     values = {}
     for key in keys:
-        values[key] = manifest.get(key)
+        values[key] = manifest[key]
     return values
-
-def set_teamcity_params(values):
-    for key, value in values.items():
-        if key == "sa_version":
-            key = "version"
-        print("##teamcity[setParameter name='{}' value='{}']".format(key, value))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Read values from a JSON manifest file')
